@@ -88,10 +88,10 @@
         if (UsuarioObj.UltimoLogin.Date < DateTime.Now.Date)
             await EntregarPresenteDiario();
 
-        await CriarNovoInventario();
+        // await CriarNovoInventario();
 
-        UsuarioObj.QntdFichas = 500;
-        await _localStorageService.SetItemAsync<Usuario>(_key, UsuarioObj);
+        // UsuarioObj.QntdFichas = 500;
+        // await _localStorageService.SetItemAsync<Usuario>(_key, UsuarioObj);
 
         OnInitializedCompleted = true;
     }
