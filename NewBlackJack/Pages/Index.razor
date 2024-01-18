@@ -1,0 +1,172 @@
+﻿@page "/"
+
+@using MudBlazor
+
+@using NewBlackJack.Components
+@using NewBlackJack.Models;
+
+@inject NavigationManager navegation
+@inject ILocalStorageService _localStorageService
+@inject ISnackbar Snackbar
+
+<PageTitle>BlackJack</PageTitle>
+
+<MudThemeProvider Theme="TemaCustomizado" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@if (OnInitializedCompleted)
+{
+    <div class="nav-menu">
+        <p>Olá, @UsuarioObj.Nome. Seu saldo é de $ @UsuarioObj.QntdFichas.</p>
+
+        <i class="fa-solid fa-gear btn-nav" @onclick="@(() => { ConfigVisibility = true; })"></i>
+    </div>
+
+    <div class="menu">
+        <h1>Blackjack</h1>
+        <div class="botoes">
+            <button class="btn-menu" @onclick="@IniciarJogo">JOGAR</button>
+            <button class="btn-menu" @onclick="@ExibirInstrucoes">INSTRUÇÕES</button>
+            <button class="btn-menu" @onclick="@ExibirLoja">LOJA</button>
+        </div>
+    </div>
+}
+
+@if (ConfigVisibility)
+{
+    <ConfiguracaoComponent @bind-Visibility="@ConfigVisibility"
+                           UsuarioObj="@UsuarioObj"
+                           SalvarUsuario="@(async (args) => await SalvarConfiguracoes(args))"
+                           ListaBaralhoAdquirido="InventarioObj.BaralhosComprados">
+
+    </ConfiguracaoComponent>
+}
+
+@if (LojaVisibility)
+{
+    <LojaComponent @bind-Visibility="@LojaVisibility"
+                   UsuarioObj="@UsuarioObj"
+                   InventarioObj="@InventarioObj"
+                   KeyInventario="@_keyInventario">
+    </LojaComponent>
+}
+
+
+@code {
+    #region Declaration
+
+    private Usuario UsuarioObj { get; set; } = new();
+    private const string _key = "UsuarioObj";
+
+    private Inventario InventarioObj { get; set; } = new();
+    private const string _keyInventario = "InventarioObj";
+
+    private MudTheme TemaCustomizado { get; set; } = new();
+
+    private bool ConfigVisibility { get; set; }
+    private bool LojaVisibility { get; set; }
+    private bool OnInitializedCompleted { get; set; }
+
+    #endregion
+
+    #region Functions
+
+    protected override async Task OnInitializedAsync()
+    {
+        AplicarTema();
+
+        UsuarioObj = await _localStorageService.GetItemAsync<Usuario>(_key);
+        InventarioObj = await _localStorageService.GetItemAsync<Inventario>(_keyInventario);
+
+        if (UsuarioObj == null)
+            await CriarNovoUsuario();
+
+        if (InventarioObj == null)
+            await CriarNovoInventario();
+
+        if (UsuarioObj.UltimoLogin.Date < DateTime.Now.Date)
+            await EntregarPresenteDiario();
+
+        await CriarNovoInventario();
+
+        UsuarioObj.QntdFichas = 500;
+        await _localStorageService.SetItemAsync<Usuario>(_key, UsuarioObj);
+
+        OnInitializedCompleted = true;
+    }
+
+    private async Task CriarNovoUsuario()
+    {
+        UsuarioObj = new Usuario()
+            {
+                Nome = "Anônimo",
+                QntdFichas = 100,
+                BaralhoAtivo = Enums.BaralhoEnums.ETipoSkinBaralho.Padrao
+            };
+
+        await _localStorageService.SetItemAsync<Usuario>(_key, UsuarioObj);
+    }
+
+    private async Task CriarNovoInventario()
+    {
+        InventarioObj = new();
+        InventarioObj.BaralhosComprados.Add(Enums.BaralhoEnums.ETipoSkinBaralho.Padrao);
+
+        await _localStorageService.SetItemAsync<Inventario>(_keyInventario, InventarioObj);
+    }
+
+    private async Task EntregarPresenteDiario()
+    {
+        UsuarioObj.QntdFichas += 10;
+        UsuarioObj.UltimoLogin = DateTime.Now.Date;
+
+        await _localStorageService.SetItemAsync<Usuario>(_key, UsuarioObj);
+
+        Snackbar.Add("Seu bônus diário de $10 foi recebido!.", Severity.Success, config =>
+        {
+            config.Icon = Icons.Material.Filled.CardGiftcard;
+        });
+
+    }
+
+    private void IniciarJogo()
+    {
+        navegation.NavigateTo("/Jogar");
+    }
+
+    private void ExibirInstrucoes()
+    {
+
+    }
+
+    private void ExibirLoja()
+    {
+        LojaVisibility = true;
+    }
+
+    private async Task SalvarConfiguracoes(Usuario args)
+    {
+        await _localStorageService.SetItemAsync<Usuario>(_key, args);
+        UsuarioObj = await _localStorageService.GetItemAsync<Usuario>(_key);
+    }
+
+    private void AplicarTema()
+    {
+        TemaCustomizado = new MudTheme()
+            {
+                Palette = new PaletteLight()
+                {
+                    Primary = Colors.Yellow.Default,
+                    Secondary = Colors.Green.Darken4,
+                    TextPrimary = Colors.Grey.Lighten5,
+                    TextSecondary = Colors.Green.Darken4,
+                    Background = Colors.Green.Darken4,
+                    DrawerBackground = Colors.Green.Darken4,
+                    BackgroundGrey = Colors.Green.Darken4,
+                },
+            };
+    }
+
+    #endregion
+}

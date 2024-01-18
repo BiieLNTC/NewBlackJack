@@ -1,0 +1,123 @@
+﻿@using MudBlazor
+
+@inject NavigationManager _navegation
+
+<div class="modal-container">
+    <div class="modal-style">
+
+        <h2 class="titulo-modal">Selecione sua Aposta</h2>
+
+        <div class="inputs-modal">
+            <button @onclick="@Decrementar" class="btn-quadrado">
+                -
+            </button>
+
+            <MudNumericField T="int" @bind-Value="_aposta" Label="Valor" HelperText="@TextoErro" Error="@Erro"
+                             HelperTextOnFocus="true" Variant="Variant.Filled" Adornment="Adornment.End" Class="input-aposta"
+                             Min="1" Max="@ValorMaxAposta" HideSpinButtons="true"
+                             AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+
+            <button @onclick="@Incrementar" class="btn-quadrado">
+                +
+            </button>
+        </div>
+
+        <div class="d-flex">
+            <button @onclick="@SairJogo" class="btn-menu">
+                Sair
+            </button>
+
+            <button @onclick="@Apostar" class="btn-menu">
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    #region Declaration
+
+    [Parameter] public int ValorMaxAposta { get; set; }
+    [Parameter] public int Aposta { get; set; }
+    [Parameter] public EventCallback<int> ApostaChanged { get; set; }
+    private int _aposta
+    {
+        get => Aposta;
+        set
+        {
+            Aposta = value;
+        }
+    }
+
+    [Parameter] public bool Visibility { get; set; }
+    [Parameter] public EventCallback<bool> VisibilityChanged { get; set; }
+    private bool _visibility
+    {
+        get => Visibility;
+        set
+        {
+            Visibility = value;
+            VisibilityChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter] public EventCallback ApostaConfirmada { get; set; }
+    private string TextoErro { get; set; }
+    private bool Erro { get; set; }
+
+    #endregion
+
+    #region Functions
+
+    protected override void OnInitialized()
+    {
+        TextoErro = $"Valor mínimo é 1 e o máximo é {ValorMaxAposta}.";
+    }
+
+    private void Incrementar()
+    {
+        _aposta += 5;
+        if (_aposta > ValorMaxAposta)
+            _aposta = ValorMaxAposta;
+    }
+
+    private void Decrementar()
+    {
+        _aposta -= 5;
+        if (_aposta < 1)
+            _aposta = 0;
+    }
+
+    private void Apostar()
+    {
+        if (ValidarValorAposta(_aposta))
+        {
+            _visibility = false;
+            ApostaChanged.InvokeAsync(_aposta);
+            ApostaConfirmada.InvokeAsync();
+        }
+    }
+
+    private bool ValidarValorAposta(int arg)
+    {
+        if (arg > ValorMaxAposta || arg < 1)
+        {
+            Erro = true;
+            return false;
+        }
+        // else if (arg < 1)
+        // {
+        //     Erro = true;
+        //     return false;
+        // }
+
+        StateHasChanged();
+        return true;
+    }
+
+    private void SairJogo()
+    {
+        _navegation.NavigateTo("/");
+    }
+
+    #endregion
+}

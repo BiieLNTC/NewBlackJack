@@ -1,0 +1,379 @@
+﻿#tela-jogo {
+    z-index: 0;
+    height: 93vh;
+}
+
+.fichas {
+    color: white;
+    font-size: 2.5rem;
+    position: absolute;
+    bottom: 0;
+    left: 80%;
+}
+
+.cartas-jogador {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+}
+
+.potuacao-jogador {
+    font-size: 80px;
+    color: white;
+    position: absolute;
+    bottom: 0;
+    padding: 25px;
+    display: flex;
+}
+
+.potuacao-dealer {
+    font-size: 80px;
+    color: white;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 25px;
+    display: flex;
+}
+
+.cartas-dealer {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+}
+
+#div-btn-comprar {
+    width: 180px;
+}
+
+.btn-comprar-img {
+    width: 180px;
+    margin: 50px 50px 10px 50px;
+    cursor: pointer;
+    display: flex;
+}
+
+.btn-comprar {
+    color: yellow;
+    width: 180px;
+    margin: 10px 50px;
+    text-align: center;
+    border-radius: 40px;
+    height: 40px;
+    background-color: rgb(133, 1, 1);
+    border: 3px solid rgb(255, 208, 0);
+    letter-spacing: 2px;
+    display: none
+}
+
+    .btn-comprar:hover {
+        cursor: pointer;
+        background-color: rgb(180, 0, 0);
+    }
+
+.btn-parar {
+    color: yellow;
+    width: 180px;
+    margin: 10px 50px;
+    text-align: center;
+    border-radius: 40px;
+    height: 40px;
+    background-color: rgb(133, 1, 1);
+    border: 3px solid rgb(255, 208, 0);
+    letter-spacing: 2px;
+}
+
+    .btn-parar:hover {
+        cursor: pointer;
+        background-color: rgb(180, 0, 0);
+    }
+
+.carta {
+    margin: 50px 10px;
+    width: 180px;
+    animation: desvirar-carta 0.5s normal linear;
+}
+
+@keyframes desvirar-carta {
+    0% {
+        transform: rotateY(90deg);
+    }
+
+    100% {
+        transform: rotateY(0deg);
+    }
+}
+
+.input-aposta {
+    color: white;
+    text-align: center;
+    margin-top: 13px;
+}
+
+.text-aposta {
+    color: white;
+    text-align: center;
+    width: 180px;
+    margin: 15px 50px;
+}
+
+.btn-quadrado {
+    margin: 15px;
+    background: green;
+    width: 50px;
+    height: 50px;
+    border: 3px solid yellow;
+    color: white;
+    font-size: 60px;
+    text-align: center;
+}
+
+.btn-fechar {
+    background-color: rgb(133, 1, 1);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    margin-left: auto;
+    color: white;
+    border-left: 3px solid rgb(255, 208, 0);
+    border-bottom: 3px solid rgb(255, 208, 0);
+}
+
+    .btn-fechar:hover {
+        cursor: pointer;
+        background-color: rgb(180, 0, 0);
+    }
+
+.btn-menu-disable {
+    background-color: rgb(84 189 84);
+    border: 3px solid rgb(255 233 134);
+    color: #c9c9c9;
+}
+
+    .btn-menu-disable:hover {
+        background-color: rgb(84 189 84);
+        cursor: not-allowed;
+    }
+/*
+    ===============================
+    |           MODAL             |
+    ===============================
+*/
+.modal-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.200);
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    transition: 2s ease-in;
+}
+
+.modal-style {
+    background-color: rgb(49, 151, 49);
+    border: 3px solid rgb(255, 208, 0);
+    animation: scaleIn 0.5s ease-in-out;
+}
+
+.titulo-modal {
+    font-size: 3rem;
+    color: white;
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.descricao-modal {
+    text-align: center;
+    color: white;
+}
+
+.inputs-modal {
+    display: flex;
+    padding: 15px;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.scale-in {
+    animation: scaleIn 0.5s ease-in-out;
+}
+
+/*
+    ===============================
+    |            LOJA             |
+    ===============================
+*/
+
+.area-produto {
+    display: flex;
+    gap: 15px;
+    padding: 0 25px 25px 25px;
+    text-align: center;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+}
+
+.produto-loja {
+    border: 3px solid yellow;
+    border-radius: 15px;
+}
+
+.titulo-produto {
+    text-align: center;
+    color: white;
+    background: #003300;
+    border-radius: 15px 15px 0 0;
+    padding: 5px;
+    border-bottom: 3px solid yellow;
+    margin-bottom: 0;
+}
+
+.botoes-produto {
+    text-align: center;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    border-top: 3px solid yellow;
+}
+
+.btn-compra {
+    width: 100%;
+    background: #006100;
+    color: white;
+    border-radius: 0 0 13px 0;
+}
+
+    .btn-compra:hover {
+        background: #009700;
+        transition: 0.2s;
+    }
+
+.btn-ver {
+    background: #305496;
+    color: white;
+    width: 100%;
+    border-radius: 0 0 0 13px;
+}
+
+    .btn-ver:hover {
+        background: #4072c9;
+        transition: 0.2s;
+    }
+
+.btn-comprado {
+    background: #9b1818;
+    width: 100%;
+    border-radius: 0 0 13px 13px;
+    color: white;
+    gap: 8px;
+    cursor: default;
+}
+
+@media (max-width: 1200px) {
+    .modal-style {
+        overflow: auto;
+        margin: 5%;
+    }
+
+    .area-produto {
+        flex-wrap: wrap;
+    }
+
+    .produto-loja {
+        display: block
+    }
+
+    .modal-loja {
+        height: 85vh;
+    }
+
+    .titulo-modal {
+        font-size: 2.5rem;
+    }
+
+    .carta {
+        margin: 50px -50px;
+        width: 180px;
+    }
+}
+
+@media (max-width: 760px) {
+
+    #tela-jogo {
+        margin-top: 10%;
+    }
+
+    .potuacao-dealer {
+        padding: 0 10px 0 0;
+        font-size: 70px;
+        margin: 0
+    }
+
+    .potuacao-jogador {
+        padding: 0 0 0 10px;
+        font-size: 70px;
+        margin: 0
+    }
+
+    .fichas {
+        right: 0;
+        left: auto;
+        margin: 0;
+    }
+
+    .btn-comprar-img {
+        display: none;
+    }
+
+    #div-btn-comprar {
+        width: 280px;
+    }
+
+    .btn-comprar {
+        display: flex;
+    }
+
+    .info-jogos {
+        position: absolute;
+        top: 38%;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .text-aposta {
+        color: white;
+        text-align: center;
+        margin: 5px 50px;
+    }
+
+    .carta {
+        margin: 70px -50px;
+        width: 120px;
+    }
+}

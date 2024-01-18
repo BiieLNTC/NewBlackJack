@@ -1,0 +1,61 @@
+﻿@using MudBlazor
+@using NewBlackJack.Enums;
+
+@if (OnInitializedCompleted)
+{
+    <div class="modal-container">
+        <div class="modal-style">
+            <button @onclick="@(async () => { _visibility = false; })" class="btn-fechar">
+                X
+            </button>
+
+            <h2 class="titulo-modal">@Titulo</h2>
+
+            <MudCarousel ShowArrows="true" ShowBullets="true" AutoCycle="true" TData="object" Style="height:450px; width: 100%;" BulletsColor="Color.Primary">
+                @foreach (var foto in ListaFotosBaralho)
+                {
+                    <MudCarouselItem Transition="transition">
+                        <div class="d-flex align-items-center justify-content-center" style="height:100%; width: 100%;">
+                            <img src="@foto" class="img-fluid" style="width: 100%;">
+                        </div>
+                    </MudCarouselItem>
+                }
+            </MudCarousel>
+        </div>
+    </div>
+}
+@code {
+    #region Declaration
+
+    [Parameter] public List<string> ListaFotosBaralho { get; set; }
+    [Parameter] public BaralhoEnums.ETipoSkinBaralho TipoBaralhoVisualizacao { get; set; }
+    [Parameter] public bool Visibility { get; set; }
+    [Parameter] public EventCallback<bool> VisibilityChanged { get; set; }
+    private bool _visibility
+    {
+        get => Visibility;
+        set
+        {
+            Visibility = value;
+            VisibilityChanged.InvokeAsync(value);
+        }
+    }
+
+    private Transition transition = Transition.Slide;
+    private string Titulo { get; set; }
+    private bool OnInitializedCompleted { get; set; }
+
+    #endregion
+
+    #region Function
+
+    protected override Task OnInitializedAsync()
+    {
+        Titulo = $"Visualização - {GenericClassEnum.ObterEnumDescription(TipoBaralhoVisualizacao)}";
+
+        OnInitializedCompleted = true;
+        return base.OnInitializedAsync();
+    }
+
+    #endregion
+}

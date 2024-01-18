@@ -1,0 +1,339 @@
+﻿@attribute [Route(PagesConstants.PAGE_JOGO)]
+
+@using NewBlackJack.Comparers
+@using NewBlackJack.Dtos
+@using NewBlackJack.Enums;
+@using NewBlackJack.Listas;
+@using NewBlackJack.Models;
+@using NewBlackJack.Services.Interfaces
+@using NewBlackJack.Components
+@using NewBlackJack.Pages.Constants
+@using static NewBlackJack.Listas.ListaModelosBaralho;
+
+@inject IBaralhoService _baralhoService
+@inject ILocalStorageService _localStorageService
+@inject NavigationManager _navegation
+
+<PageTitle>BlackJack - Jogar</PageTitle>
+
+@if (OnInitializedCompleted)
+{
+
+    <div id="tela-jogo">
+
+        <p class="potuacao-dealer">@PontosDealer</p>
+
+        <div class="cartas-dealer">
+            @foreach (var item in ListaCartasDealer)
+            {
+                <img src="@item.Image" class="carta"
+                     alt="@($"${item.Value} - ${item.Suit}")" />
+            }
+        </div>
+
+        <div class="area-jogador">
+            <div class="info-jogos">
+                <div id="div-btn-comprar">
+                    <img class="btn-comprar-img" @onclick="@AbrirModoCompra" src="@ObterVersoBaralho()">
+                    <button class="btn-comprar" disabled="@JogoAcabado" @onclick="@AbrirModoCompra">COMPRAR</button>
+
+                </div>
+
+                <p class="text-aposta">Apostado: @ValorAposta $</p>
+                <p class="text-aposta">Retornos: @(ValorAposta * 2) $</p>
+
+                <button @onclick="PararJogo" class="btn-parar">PARAR</button>
+            </div>
+
+            <div class="cartas-jogador">
+                @foreach (var item in ListaCartasJogador)
+                {
+                    <img src="@item.Image" class="carta"
+                         alt="@($"${item.Value} - ${item.Suit}")" />
+                }
+            </div>
+
+            <p class="potuacao-jogador">@PontosJogador</p>
+            <p class="fichas">Saldo: @UsuarioObj.QntdFichas $</p>
+        </div>
+    </div>
+}
+else
+{
+    <CarregandoComponent />
+}
+
+@if (VisibilityGameOver)
+{
+    <GameOverComponent Titulo="@TITULO_GAMEOVER"
+                       Descricao="@DESCRICAO_GAMEOVER"
+                       Reiniciar="@ReiniciarJogo"
+                       Menu="@IrMenu">
+    </GameOverComponent>
+}
+
+@if (VisibilitySelecaoAposta)
+{
+    <ApostaComponent @bind-Aposta="ValorAposta"
+    @bind-Visibility="VisibilitySelecaoAposta"
+                     ValorMaxAposta="UsuarioObj.QntdFichas"
+                     ApostaConfirmada="@CarregarDadosIniciais">
+    </ApostaComponent>
+}
+
+@if (VisibilityModoCompra)
+{
+    <ComprarComponent @bind-Visibility="VisibilityModoCompra"
+                      QuantidadeCartasJogador="@ListaCartasJogador.Count"
+                      ModoCompraSelecionado="@(async (arg) => await RealizarModoJogada(arg))">
+    </ComprarComponent>
+}
+
+@code {
+    #region Declaration
+
+    private Usuario UsuarioObj { get; set; } = new();
+    private string _key { get; set; } = "UsuarioObj";
+
+    private string ChaveBaralho { get; set; }
+
+    private List<ModeloBaralho> ListaBaralhoSkin { get; set; } = new();
+    private List<CartaDto> ListaCartasJogador { get; set; } = new();
+    private List<CartaDto> ListaCartasDealer { get; set; } = new();
+    private int PontosJogador { get; set; }
+    private int PontosDealer { get; set; }
+
+    public int ValorAposta { get; set; }
+    private bool JogoAcabado { get; set; }
+
+    private bool OnInitializedCompleted { get; set; }
+    private bool VisibilityGameOver { get; set; }
+    private bool VisibilitySelecaoAposta { get; set; }
+    private bool VisibilityModoCompra { get; set; }
+
+
+    private string TITULO_GAMEOVER { get; set; }
+    private string DESCRICAO_GAMEOVER { get; set; }
+
+    #endregion
+
+    #region Functions
+
+    protected override async Task OnInitializedAsync()
+    {
+        UsuarioObj = await _localStorageService.GetItemAsync<Usuario>(_key);
+        ListaBaralhoSkin = ListaModelosBaralho.ObterLista(UsuarioObj.BaralhoAtivo);
+
+        await Embaralhar();
+
+        OnInitializedCompleted = true;
+        VisibilitySelecaoAposta = true;
+    }
+
+    private async Task Embaralhar()
+    {
+        ChaveBaralho = await _baralhoService.ObterBaralho();
+    }
+
+    private async Task CarregarDadosIniciais()
+    {
+        ListaCartasJogador = await _baralhoService.ObterCartas(2, ChaveBaralho, ListaBaralhoSkin);
+        ListaCartasDealer = await _baralhoService.ObterCartas(1, ChaveBaralho, ListaBaralhoSkin);
+
+        UsuarioObj.QntdFichas -= ValorAposta;
+
+        await CalcularPontos();
+    }
+
+    private string ObterVersoBaralho()
+    {
+        switch (UsuarioObj.BaralhoAtivo)
+        {
+            case BaralhoEnums.ETipoSkinBaralho.Medieval:
+                return "./Images/BaralhoMedieval/Verso.png";
+            case BaralhoEnums.ETipoSkinBaralho.Cartoon:
+                return "./Images/BaralhoCartoon/Verso.png";
+            case BaralhoEnums.ETipoSkinBaralho.Aquarela:
+                return "./Images/BaralhoAquarela/Verso.png";
+            default:
+                return "https://www.deckofcardsapi.com/static/img/back.png";
+        }
+    }
+
+    private async Task<CartaDto> ObterCarta(int quantidade)
+    {
+        var carta = await _baralhoService.ObterCartas(quantidade, ChaveBaralho, ListaBaralhoSkin);
+
+        return carta.FirstOrDefault();
+    }
+
+    private async Task ComprarCarta()
+    {
+        ListaCartasJogador.Add(await ObterCarta(1));
+        await CalcularPontos();
+    }
+
+    private void AbrirModoCompra()
+    {
+        if (!JogoAcabado)
+            VisibilityModoCompra = true;
+    }
+
+    private async Task RealizarModoJogada(BaralhoEnums.ETipoCompra tipoCompra)
+    {
+        VisibilityModoCompra = false;
+
+        if (tipoCompra == BaralhoEnums.ETipoCompra.Dobrar)
+        {
+            UsuarioObj.QntdFichas -= ValorAposta;
+            ValorAposta *= 2;
+
+            await ComprarCarta();
+            if (!JogoAcabado)
+            {
+                await PararJogo();
+            }
+        }
+        else if (tipoCompra == BaralhoEnums.ETipoCompra.Comprar)
+        {
+            await ComprarCarta();
+        }
+    }
+
+    private async Task PararJogo()
+    {
+        JogoAcabado = true;
+
+        while (PontosDealer < PontosJogador)
+        {
+            ListaCartasDealer.Add(await ObterCarta(1));
+            await CalcularPontos();
+        }
+
+        if (PontosDealer > 21)
+        {
+            TITULO_GAMEOVER = "VOCÊ GANHOU!";
+            DESCRICAO_GAMEOVER = "O Dealer Estourou.";
+            UsuarioObj.QntdFichas += ValorAposta * 2;
+        }
+        else if (PontosDealer == PontosJogador)
+        {
+            TITULO_GAMEOVER = "EMPATE!";
+            DESCRICAO_GAMEOVER = "O Dealer conseguiu uma pontuação igual a sua.";
+            UsuarioObj.QntdFichas += ValorAposta;
+        }
+        else
+        {
+            TITULO_GAMEOVER = "VOCÊ PERDEU!";
+            DESCRICAO_GAMEOVER = "O Dealer consegui uma pontuação maior que a sua.";
+        }
+
+        await AtualizarDadosUsuario();
+        VisibilityGameOver = true;
+    }
+
+    private int RealizarSomatoria(List<string> listValores)
+    {
+        listValores.Sort(new OrdenadorCartasComparer());
+        int pontuacao = 0;
+
+        listValores.ForEach(valor =>
+        {
+            if (valor == "ACE")
+            {
+                if (pontuacao + 11 > 21)
+                    pontuacao += 1;
+                else
+                    pontuacao += 11;
+            }
+            else
+            {
+                pontuacao += MapeamentoValorCartas[valor];
+            }
+        });
+
+        return pontuacao;
+    }
+
+    private async Task CalcularPontos()
+    {
+        var valoresJogador = ListaCartasJogador.Select(s => s.Value).ToList();
+        var valoresDealer = ListaCartasDealer.Select(s => s.Value).ToList();
+
+        PontosJogador = RealizarSomatoria(valoresJogador);
+        PontosDealer = RealizarSomatoria(valoresDealer);
+
+        await ValidarVitoria();
+        StateHasChanged();
+    }
+
+    private async Task ValidarVitoria()
+    {
+        if (PontosJogador == 21)
+        {
+            VisibilityGameOver = true;
+            TITULO_GAMEOVER = "VOCÊ GANHOU!";
+            DESCRICAO_GAMEOVER = "Uau, você somou 21, é BLACKJACK!";
+            UsuarioObj.QntdFichas += ValorAposta * 2;
+            JogoAcabado = true;
+        }
+        else if (PontosJogador > 21)
+        {
+            VisibilityGameOver = true;
+            TITULO_GAMEOVER = "VOCÊ PERDEU!";
+            DESCRICAO_GAMEOVER = "Estorou, sua pontuação passou de 21.";
+            JogoAcabado = true;
+        }
+
+        await AtualizarDadosUsuario();
+    }
+
+    private async Task ReiniciarJogo()
+    {
+        await Embaralhar();
+
+        PontosJogador = 0;
+        PontosDealer = 0;
+        VisibilityGameOver = false;
+        JogoAcabado = false;
+        VisibilitySelecaoAposta = true;
+
+        ListaCartasJogador = new();
+        ListaCartasDealer = new();
+    }
+
+    private async Task AtualizarDadosUsuario()
+    {
+        await _localStorageService.SetItemAsync<Usuario>(_key, UsuarioObj);
+    }
+
+    private void IrMenu()
+    {
+        VisibilityGameOver = false;
+        _navegation.NavigateTo("/");
+    }
+
+    #endregion
+
+    #region Dictionary
+
+    Dictionary<string, int> MapeamentoValorCartas = new Dictionary<string, int>
+        {
+            {"1", 1},
+            {"2", 2},
+            {"3", 3},
+            {"4", 4},
+            {"5", 5},
+            {"6", 6},
+            {"7", 7},
+            {"8", 8},
+            {"9", 9},
+            {"10", 10},
+            {"QUEEN", 10},
+            {"JACK", 10},
+            {"KING", 10}
+        };
+
+    #endregion
+
+}

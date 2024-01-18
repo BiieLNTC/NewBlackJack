@@ -1,0 +1,49 @@
+﻿@using NewBlackJack.Enums;
+
+<div class="modal-container">
+    <div class="modal-style">
+
+        <button @onclick="@(async () => { _visibility = false; })" class="btn-fechar">
+            X
+        </button>
+
+        <h2 class="titulo-modal">Selecione modo Compra</h2>
+
+        <div class="inputs-modal">
+            <button @onclick="@(async () => { await ModoCompraSelecionado.InvokeAsync(BaralhoEnums.ETipoCompra.Comprar); })"
+                    class="btn-menu">
+                Comprar
+            </button>
+
+            <button @onclick="@(async () => { await ModoCompraSelecionado.InvokeAsync(BaralhoEnums.ETipoCompra.Dobrar); })"
+                    disabled="@(QuantidadeCartasJogador > 2)" class="@(QuantidadeCartasJogador > 2 ? "btn-menu btn-menu-disable" : "btn-menu")">
+                Dobrar
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    #region Declaration
+
+    [Parameter] public int QuantidadeCartasJogador { get; set; }
+
+    [Parameter] public EventCallback<BaralhoEnums.ETipoCompra> ModoCompraSelecionado { get; set; }
+    [Parameter] public bool Visibility { get; set; }
+    [Parameter] public EventCallback<bool> VisibilityChanged { get; set; }
+    private bool _visibility
+    {
+        get => Visibility;
+        set
+        {
+            Visibility = value;
+            VisibilityChanged.InvokeAsync(value);
+        }
+    }
+
+    #endregion
+
+    #region Functions
+
+    #endregion
+}

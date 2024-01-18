@@ -1,0 +1,124 @@
+﻿@using NewBlackJack.Enums;
+@using NewBlackJack.Components;
+@using NewBlackJack.Listas;
+@using NewBlackJack.Models;
+@using static NewBlackJack.Listas.ListaItensLoja;
+
+@using MudBlazor;
+
+@inject ILocalStorageService _localStorageService
+@inject ISnackbar Snackbar
+
+@if (OnInitializedCompleted)
+{
+    <div class="modal-container">
+        <div class="modal-style modal-loja">
+            <button @onclick="@(async () => { _visibility = false; })" class="btn-fechar">
+                X
+            </button>
+
+            <h2 class="titulo-modal">Loja</h2>
+
+            <div class="area-produto">
+                @foreach (var item in ListaItems)
+                {
+                    <div class="produto-loja">
+                        <p class="titulo-produto">@($"{item.NomeItem} | $ {item.Preco}")</p>
+                        <img class="img-produto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/A_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg/258px-A_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg">
+                        <div class="botoes-produto">
+                            @if (!InventarioObj.BaralhosComprados.Contains(item.SkinBaralho))
+                            {
+                                <button class="btn-ver" @onclick="@(() => VerItem(item.SkinBaralho, item.FotosProdutos))"><i class="fa-regular fa-eye"></i>Ver</button>
+                                <button class="btn-compra" @onclick="@(async () => await Comprar(item.SkinBaralho, item.Preco))"><i class="fa-solid fa-cart-plus"></i>Comprar</button>
+                            }
+                            else
+                            {
+                                <button class="btn-comprado"><i class="fa-solid fa-circle-check"></i>Comprado</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    <CarregandoComponent />
+}
+
+
+@if (VisibilityVisualizacaoItem)
+{
+    <VisualizarItemComponent @bind-Visibility="@VisibilityVisualizacaoItem"
+                             TipoBaralhoVisualizacao="TipoBaralhoVisualizacao"
+                             ListaFotosBaralho="ListaFotosBaralhos">
+    </VisualizarItemComponent>
+}
+
+@code {
+    #region Declaration
+    [Parameter] public bool Visibility { get; set; }
+    [Parameter] public EventCallback<bool> VisibilityChanged { get; set; }
+    private bool _visibility
+    {
+        get => Visibility;
+        set
+        {
+            Visibility = value;
+            VisibilityChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter] public Usuario UsuarioObj { get; set; }
+    [Parameter] public Inventario InventarioObj { get; set; }
+    [Parameter] public string KeyInventario { get; set; }
+
+    private List<Item> ListaItems { get; set; } = new();
+    private List<string> ListaFotosBaralhos { get; set; } = new();
+    private bool VisibilityVisualizacaoItem { get; set; }
+    private BaralhoEnums.ETipoSkinBaralho TipoBaralhoVisualizacao { get; set; }
+
+    private bool OnInitializedCompleted { get; set; }
+
+    #endregion
+
+    #region Functions
+
+    protected override void OnInitialized()
+    {
+        ListaItems = ListaItensLoja.ObterLista();
+        OnInitializedCompleted = true;
+    }
+
+    private async Task Comprar(BaralhoEnums.ETipoSkinBaralho modeloBaralho, int valor)
+    {
+        if (UsuarioObj.QntdFichas >= valor)
+        {
+            InventarioObj.BaralhosComprados.Add(modeloBaralho);
+            UsuarioObj.QntdFichas -= valor;
+
+            await _localStorageService.SetItemAsync<Inventario>(KeyInventario, InventarioObj);
+            await _localStorageService.SetItemAsync<Usuario>("UsuarioObj", UsuarioObj);
+
+            Snackbar.Add("Baralho comprado com sucesso.", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Compra não realizada, saldo insuficiente.", Severity.Error, config =>
+            {
+                config.Icon = Icons.Material.Filled.MoneyOff;
+            });
+
+        }
+    }
+
+    private void VerItem(BaralhoEnums.ETipoSkinBaralho tipoBaralho, List<string> listaFotos)
+    {
+        ListaFotosBaralhos = listaFotos;
+        TipoBaralhoVisualizacao = tipoBaralho;
+        VisibilityVisualizacaoItem = true;
+    }
+
+    #endregion
+}

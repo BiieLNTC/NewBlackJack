@@ -1,0 +1,41 @@
+﻿<div class="modal-container">
+    <div class="modal-style">
+
+        <h2 class="titulo-modal">@Titulo</h2>
+
+        <p class="descricao-modal">
+            @Descricao
+        </p>
+
+        <button @onclick="@ReiniciarJogo" class="btn-menu">
+            REINICIAR
+        </button>
+        <button @onclick="@IrMenu" class="btn-menu">
+            MENU
+        </button>
+    </div>
+</div>
+
+@code {
+    #region Declaration
+
+    [Parameter] public string Titulo { get; set; }
+    [Parameter] public string Descricao { get; set; }
+    [Parameter] public EventCallback Reiniciar { get; set; }
+    [Parameter] public EventCallback Menu { get; set; }
+    #endregion
+
+    #region Functions
+
+    private async Task ReiniciarJogo()
+    {
+        await Reiniciar.InvokeAsync();
+    }
+
+    private async Task IrMenu()
+    {
+        await Menu.InvokeAsync();
+    }
+
+    #endregion
+}
