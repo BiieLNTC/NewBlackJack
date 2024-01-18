@@ -20,6 +20,6 @@ jobs:
 
             # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
-      run: dotnet publish NewBlackJack.csproj -c Release -o release --nologo
+      run: dotnet publish NewBlackJack/NewBlackJack.csproj -c Release -o release --nologo
 
     
