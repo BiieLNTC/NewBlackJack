@@ -22,7 +22,7 @@ jobs:
     - name: Publish with dotnet
       run: dotnet publish --configuration Release --output build -p:GHPages=tru
     # changes the base-tag in index.html from '/' to 'BlazorAppSpendsRegister' to match GitHub Pages repository subdirectory
-    - name: Change base-tag in index.html from / to BlazorAppSpendsRegister
+    - name: Change base-tag in index.html from / to NewBlackJack
       run: sed -i 's/<base href="\/" \/>/<base href="\/NewBlackJack\/" \/>/g' build/wwwroot/index.html
     - name: Commit wwwroot to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@3.7.1
