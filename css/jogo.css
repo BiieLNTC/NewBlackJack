@@ -293,6 +293,15 @@
     cursor: default;
 }
 
+.btn-indisponivel {
+    background: #3f4347;
+    width: 100%;
+    border-radius: 0 0 13px 13px;
+    color: white;
+    gap: 8px;
+    cursor: default;
+}
+
 @media (max-width: 1200px) {
     .modal-style {
         overflow: auto;
