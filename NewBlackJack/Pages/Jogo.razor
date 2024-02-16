@@ -1,5 +1,4 @@
-﻿@* @attribute [Route(PagesConstants.PAGE_JOGO)] *@
-@page "/Jogar"
+﻿@attribute [Route(PagesConstants.PAGE_JOGO)]
 
 @using NewBlackJack.Comparers
 @using NewBlackJack.Dtos
@@ -76,7 +75,7 @@ else
 @if (VisibilitySelecaoAposta)
 {
     <ApostaComponent @bind-Aposta="ValorAposta"
-    @bind-Visibility="VisibilitySelecaoAposta"
+                     @bind-Visibility="VisibilitySelecaoAposta"
                      ValorMaxAposta="UsuarioObj.QntdFichas"
                      ApostaConfirmada="@CarregarDadosIniciais">
     </ApostaComponent>
