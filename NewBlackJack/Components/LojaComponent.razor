@@ -24,12 +24,17 @@
                 {
                     <div class="produto-loja">
                         <p class="titulo-produto">@($"{item.NomeItem} | $ {item.Preco}")</p>
-                        <img class="img-produto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/A_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg/258px-A_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg">
+                        @* <img class="img-produto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/A_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg/258px-A_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg"> *@
+                        <img class="img-produto" src="@item.FotoPrincipal">
                         <div class="botoes-produto">
-                            @if (!InventarioObj.BaralhosComprados.Contains(item.SkinBaralho))
+                            @if (!InventarioObj.BaralhosComprados.Contains(item.SkinBaralho) && !item.Indisponivel)
                             {
                                 <button class="btn-ver" @onclick="@(() => VerItem(item.SkinBaralho, item.FotosProdutos))"><i class="fa-regular fa-eye"></i>Ver</button>
                                 <button class="btn-compra" @onclick="@(async () => await Comprar(item.SkinBaralho, item.Preco))"><i class="fa-solid fa-cart-plus"></i>Comprar</button>
+                            }
+                            else if (item.Indisponivel)
+                            {
+                                <button class="btn-indisponivel"><i class="fa-solid fa-clock"></i>Em Breve</button>
                             }
                             else
                             {

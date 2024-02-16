@@ -43,6 +43,13 @@
     </ConfiguracaoComponent>
 }
 
+@if (InstrucoesVisibility)
+{
+    <InstrucoesComponent @bind-Visibility="@InstrucoesVisibility">
+
+    </InstrucoesComponent>
+}
+
 @if (LojaVisibility)
 {
     <LojaComponent @bind-Visibility="@LojaVisibility"
@@ -65,6 +72,7 @@
     private MudTheme TemaCustomizado { get; set; } = new();
 
     private bool ConfigVisibility { get; set; }
+    private bool InstrucoesVisibility { get; set; }
     private bool LojaVisibility { get; set; }
     private bool OnInitializedCompleted { get; set; }
 
@@ -137,7 +145,7 @@
 
     private void ExibirInstrucoes()
     {
-
+        InstrucoesVisibility = true;
     }
 
     private void ExibirLoja()

@@ -1,0 +1,95 @@
+﻿<div class="modal-container">
+    <div class="modal-style modal-loja">
+        <button @onclick="@(async () => { _visibility = false; })" class="btn-fechar">
+            X
+        </button>
+
+        <div class="area-instrucoes">
+
+            <h1>Bem-vindo ao Blackjack!</h1>
+
+            <p>Este é um jogo de cartas clássico, também conhecido como 21, que combina estratégia e sorte.</p>
+
+            <h2>Regras Básicas:</h2>
+
+            <ol>
+                <li>
+                    <strong>Valores das Cartas:</strong>
+                    <ul>
+                        <li>As cartas numéricas (de 2 a 10) têm o valor correspondente.</li>
+                        <li>As cartas face (valete, dama e rei) valem 10 pontos cada.</li>
+                        <li>O ás pode valer 1 ponto ou 11 pontos, dependendo do que for mais vantajoso para a mão.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>O Início do Jogo:</strong>
+                    <ul>
+                        <li>Cada jogador e o dealer recebem duas cartas no início.</li>
+                        <li>Uma das cartas do dealer é revelada, enquanto a outra permanece oculta.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Objetivo:</strong>
+                    <ul>
+                        <li>Seu objetivo é obter uma mão com um valor total mais próximo de 21 do que a mão do dealer, sem ultrapassar 21.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Jogando as Cartas:</strong>
+                    <ul>
+                        <li>Você pode pedir mais cartas ("Comprar") para aumentar o valor da sua mão.</li>
+                        <li>Se decidir parar de pedir cartas ("Parar"), sua mão é finalizada, e o dealer joga suas cartas.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Vencer o Dealer:</strong>
+                    <ul>
+                        <li>Se o valor da sua mão for mais alto que o do dealer, sem ultrapassar 21, você vence.</li>
+                        <li>Se a sua mão ultrapassar 21, você perde automaticamente, independentemente da pontuação do dealer.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Blackjack:</strong>
+                    <ul>
+                        <li>Se suas duas primeiras cartas totalizarem 21, você tem um "Blackjack" e ganha automaticamente, a menos que o dealer também tenha um Blackjack.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Empate:</strong>
+                    <ul>
+                        <li>Se o valor da sua mão for igual ao do dealer, é um empate e você recebe sua aposta de volta.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Dobrar:</strong>
+                    <ul>
+                        <li>Em alguns casos, você pode optar por dobrar sua aposta e receber apenas mais uma carta. Essa escolha só pode ser realizada na primeira jogada.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <p>Lembre-se, o Blackjack é uma mistura de estratégia e sorte. Conhecer as regras básicas e tomar decisões estratégicas durante o jogo pode aumentar suas chances de sucesso. Divirta-se jogando e boa sorte!</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Visibility { get; set; }
+    [Parameter] public EventCallback<bool> VisibilityChanged { get; set; }
+    private bool _visibility
+    {
+        get => Visibility;
+        set
+        {
+            Visibility = value;
+            VisibilityChanged.InvokeAsync(value);
+        }
+    }
+}
