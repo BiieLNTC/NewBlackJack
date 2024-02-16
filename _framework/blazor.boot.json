@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "NewBlackJack",
   "resources": {
-    "hash": "sha256-LuqHD2cJZBlihS+RXBdXYi5be4YgA0ojUqd4iSVgsYg=",
+    "hash": "sha256-e4cxy28Te9ntObDsyibjljivyLdkM7qt89T+XMUJsmg=",
     "jsModuleNative": {
       "dotnet.native.8.0.2.jgt5nhn140.js": "sha256-gPMK16QWoJSTxorlZJqcVtbBRTniIQWlLsJN2O4cJHg="
     },
@@ -38,7 +38,7 @@
       "Microsoft.JSInterop.wasm": "sha256-fQzUKiMn301ua8bD8vALVSsfhGn3hOiW5qYwk4tBVrI=",
       "Microsoft.JSInterop.WebAssembly.wasm": "sha256-aCgxiIU+arbpOkgLngl1hBQLocrFL2/t1zUJV8HXOzI=",
       "MudBlazor.wasm": "sha256-3UxFlGrQYa0030NX088cHqKfHnsF4X9LKRUCCZnd438=",
-      "NewBlackJack.wasm": "sha256-VB39HjSj5UxN+EajZkX/rckSJO2IFbAQygiSAfekA2I=",
+      "NewBlackJack.wasm": "sha256-mFvo5YfDBkOvzyAosfWaHk1mJs4yYTNdtyIYkl1SZKE=",
       "Newtonsoft.Json.wasm": "sha256-GlXMWKvDs45M2pACoR3Y4Qh8mcrOZGljqmvJY+6JZ5s=",
       "System.Collections.Concurrent.wasm": "sha256-EFNz25Kg5iaZzisbqquBcvMwuiGlPhooKf8LFPm7t0s=",
       "System.Collections.NonGeneric.wasm": "sha256-v3ECfNmy5lN1s3q0kPCtZZSfuU47P1ScCsHBsRBwVzA=",
